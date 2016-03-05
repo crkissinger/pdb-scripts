@@ -1,0 +1,9 @@
+#!/bin/bash
+#
+# Lists the unique values of the atom occupancies present in the PDB input, separated by spaces
+#
+# Accepts one or more PDB-format coordinate files on the command line
+# If no files are specified, or "-" is used as a file name, the input is read
+# from the standard input.
+#
+grep -h -e ^ATOM -e ^HETATM $* | cut -c 55-60 | uniq | tr -d " " | sort -n | uniq | { tr "\n" " "; echo; } | sed -E "s/[[:space:]]*$//"

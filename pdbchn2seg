@@ -1,0 +1,9 @@
+#!/bin/bash
+#
+# Sets the the X-PLOR/CNS seg-id to the chain id in the input PDB files
+#
+# Accepts one or more PDB-format coordinate files on the command line
+# If no files are specified, or "-" is used as a file name, the input is read
+# from the standard input.
+#
+awk '{ if ( $0 ~ /^ATOM  |^HETATM/ ) { printf "%s%c%s\n", substr($0,1,72), substr($0,22,1), substr($0, 74); } else print; }' $*

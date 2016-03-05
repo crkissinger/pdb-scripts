@@ -1,0 +1,23 @@
+#!/bin/bash
+#
+# Sets the chain id in the input PDB files to a specific value
+#
+# The value is specified with the manditory option "-c value".
+#
+# Accepts one or more PDB-format coordinate files on the command line
+# If no files are specified, or "-" is used as a file name, the input is read
+# from the standard input.
+#
+while getopts c: FLAG
+do
+  case "$FLAG" in
+    c) CHAIN_VALUE="$OPTARG";;
+    [?]) OPT_ERROR="YES";;
+  esac
+done
+if [ -n "$OPT_ERROR" ] || [ -z "$CHAIN_VALUE" ]; then
+ printf "Usage: %s -c chain-id [file ...]\n" `basename $0` 1>&2
+ exit 1
+fi
+shift $((OPTIND-1))
+awk '{ if ( $0 ~ /^ATOM  |^HETATM/ ) { printf "%s%c%s\n", substr($0,1,21), "'${CHAIN_VALUE}'", substr( $0, 23 ); } else print; }' $*

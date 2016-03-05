@@ -1,0 +1,119 @@
+#!/bin/bash
+#
+# Calculates the total weight in Daltons of all atoms in the file
+# based on the element types present in PDB files
+#
+# Accepts one or more PDB-format coordinate files on the command line
+# If no files are specified, or "-" is used as a file name, the input is read
+# from the standard input.
+#
+# NOTE: This command uses the element type field, not the atom name, to
+# determine the element type, so that field must be present.
+#
+grep -h -e ^ATOM -e ^HETATM $* | cut -c 77-78 | sort | uniq -c | sort -b -k 2 | \
+awk 'BEGIN {mw = 0.0}
+{count = $1}
+$2 == "H" {mw += 1.00794 * count; next}
+$2 == "HE" {mw += 4.002602 * count; next}
+$2 == "LI" {mw += 6.941 * count; next}
+$2 == "BE" {mw += 9.01218 * count; next}
+$2 == "B" {mw += 10.811 * count; next}
+$2 == "C" {mw += 12.011 * count; next}
+$2 == "N" {mw += 14.00674 * count; next}
+$2 == "O" {mw += 15.9994 * count; next}
+$2 == "F" {mw += 18.998403 * count; next}
+$2 == "NE" {mw += 20.1797 * count; next}
+$2 == "NA" {mw += 22.989768 * count; next}
+$2 == "MG" {mw += 24.305 * count; next}
+$2 == "AL" {mw += 26.981539 * count; next}
+$2 == "SI" {mw += 28.0855 * count; next}
+$2 == "P" {mw += 30.973762 * count; next}
+$2 == "S" {mw += 32.066 * count; next}
+$2 == "CL" {mw += 35.4527 * count; next}
+$2 == "AR" {mw += 39.948 * count; next}
+$2 == "K" {mw += 39.0983 * count; next}
+$2 == "CA" {mw += 40.078 * count; next}
+$2 == "SC" {mw += 44.95591 * count; next}
+$2 == "TI" {mw += 47.88 * count; next}
+$2 == "V" {mw += 50.9415 * count; next}
+$2 == "CR" {mw += 51.9961 * count; next}
+$2 == "MN" {mw += 54.93805 * count; next}
+$2 == "FE" {mw += 55.847 * count; next}
+$2 == "CO" {mw += 58.9332 * count; next}
+$2 == "NI" {mw += 58.6934 * count; next}
+$2 == "CU" {mw += 63.546 * count; next}
+$2 == "ZN" {mw += 65.39 * count; next}
+$2 == "GA" {mw += 69.723 * count; next}
+$2 == "GE" {mw += 72.61 * count; next}
+$2 == "AS" {mw += 74.92159 * count; next}
+$2 == "SE" {mw += 78.96 * count; next}
+$2 == "BR" {mw += 79.904 * count; next}
+$2 == "KR" {mw += 83.8 * count; next}
+$2 == "RB" {mw += 85.4678 * count; next}
+$2 == "SR" {mw += 87.62 * count; next}
+$2 == "Y" {mw += 88.90585 * count; next}
+$2 == "ZR" {mw += 91.224 * count; next}
+$2 == "NB" {mw += 92.90638 * count; next}
+$2 == "MO" {mw += 95.94 * count; next}
+$2 == "TC" {mw += 97.9072 * count; next}
+$2 == "RU" {mw += 101.07 * count; next}
+$2 == "RH" {mw += 102.9055 * count; next}
+$2 == "PD" {mw += 106.42 * count; next}
+$2 == "AG" {mw += 107.8682 * count; next}
+$2 == "CD" {mw += 112.411 * count; next}
+$2 == "IN" {mw += 114.818 * count; next}
+$2 == "SN" {mw += 118.71 * count; next}
+$2 == "SB" {mw += 121.760 * count; next}
+$2 == "TE" {mw += 127.6 * count; next}
+$2 == "I" {mw += 126.90447 * count; next}
+$2 == "XE" {mw += 131.29 * count; next}
+$2 == "CS" {mw += 132.90543 * count; next}
+$2 == "BA" {mw += 137.327 * count; next}
+$2 == "LA" {mw += 138.9055 * count; next}
+$2 == "CE" {mw += 140.115 * count; next}
+$2 == "PR" {mw += 140.90765 * count; next}
+$2 == "ND" {mw += 144.24 * count; next}
+$2 == "PM" {mw += 144.9127 * count; next}
+$2 == "SM" {mw += 150.36 * count; next}
+$2 == "EU" {mw += 151.965 * count; next}
+$2 == "GD" {mw += 157.25 * count; next}
+$2 == "TB" {mw += 158.92534 * count; next}
+$2 == "DY" {mw += 162.50 * count; next}
+$2 == "HO" {mw += 164.93032 * count; next}
+$2 == "ER" {mw += 167.26 * count; next}
+$2 == "TM" {mw += 168.93421 * count; next}
+$2 == "YB" {mw += 173.04 * count; next}
+$2 == "LU" {mw += 174.967 * count; next}
+$2 == "HF" {mw += 178.49 * count; next}
+$2 == "TA" {mw += 180.9479 * count; next}
+$2 == "W" {mw += 183.84 * count; next}
+$2 == "RE" {mw += 186.207 * count; next}
+$2 == "OS" {mw += 190.23 * count; next}
+$2 == "IR" {mw += 192.22 * count; next}
+$2 == "PT" {mw += 195.08 * count; next}
+$2 == "AU" {mw += 196.96654 * count; next}
+$2 == "HG" {mw += 200.59 * count; next}
+$2 == "TL" {mw += 204.3833 * count; next}
+$2 == "PB" {mw += 207.2 * count; next}
+$2 == "BI" {mw += 208.98037 * count; next}
+$2 == "PO" {mw += 208.9824 * count; next}
+$2 == "AT" {mw += 209.9871 * count; next}
+$2 == "RN" {mw += 222.0176 * count; next}
+$2 == "FR" {mw += 223.0197 * count; next}
+$2 == "RA" {mw += 226.0254 * count; next}
+$2 == "AC" {mw += 227.0278 * count; next}
+$2 == "TH" {mw += 232.0381 * count; next}
+$2 == "PA" {mw += 231.03588 * count; next}
+$2 == "U" {mw += 238.0289 * count; next}
+$2 == "NP" {mw += 237.048 * count; next}
+$2 == "PU" {mw += 244.0642 * count; next}
+$2 == "AM" {mw += 243.0614 * count; next}
+$2 == "CM" {mw += 247.0703 * count; next}
+$2 == "BK" {mw += 247.0703 * count; next}
+$2 == "CF" {mw += 251.0796 * count; next}
+$2 == "ES" {mw += 252.083 * count; next}
+$2 == "FM" {mw += 257.0951 * count; next}
+$2 == "MD" {mw += 258.1 * count; next}
+$2 == "NO" {mw += 259.1009 * count; next}
+$2 == "LR" {mw += 262.11 * count; next}
+END {printf "%.6f\n", mw}'

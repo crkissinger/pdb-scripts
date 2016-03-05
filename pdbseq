@@ -1,0 +1,51 @@
+#!/bin/bash
+#
+# Extracts the sequence (as one-letter codes) from the ATOM/HETATM records
+# in a PDB file
+# 
+# TODO: make sure all codes supported by both PDB and FASTA format are output
+# output dash as FASTA gap indicator?
+# terminal modifications should be skipped
+# DNA, RNA or other non-protein should be skipped
+#
+# Accepts one or more PDB-format coordinate files on the command line
+# If no files are specified, or if "-" is used on the command line, the
+# standard input is used.
+#
+# Waters are ignored
+#
+# Depends on consecutive changes in residue type, residue id and/or chain id to
+# indicate new residue
+#
+grep -h -e ^ATOM -e ^HETATM -e ^ENDMDL $* | cut -c 18-26 | grep -v "^HOH" | uniq | cut -c 1-5 | \
+ awk 'BEGIN {chain="START"} {$0=toupper($0); if ($2 && $2 != chain) {if (chain != "START") printf "\n"; printf ">"$2"\n"; chain=$2}}
+ /ACE/ {next}
+ /ALA/ {printf "A"; next}
+ /ARG/ {printf "R"; next}
+ /ASN/ {printf "N"; next}
+ /ASP/ {printf "D"; next}
+ /ASX/ {printf "B"; next}
+ /CYS/ {printf "C"; next}
+ /GLN/ {printf "Q"; next}
+ /GLU/ {printf "E"; next}
+ /GLX/ {printf "Z"; next}
+ /GLY/ {printf "G"; next}
+ /HIS/ {printf "H"; next}
+ /ILE/ {printf "I"; next}
+ /LEU/ {printf "L"; next}
+ /LYS/ {printf "K"; next}
+ /MET/ {printf "M"; next}
+ /MSE/ {printf "M"; next}
+ /NH2/ {next}
+ /PHE/ {printf "F"; next}
+ /PRO/ {printf "P"; next}
+ /SER/ {printf "S"; next}
+ /THR/ {printf "T"; next}
+ /TRP/ {printf "W"; next}
+ /TYR/ {printf "Y"; next}
+ /UNK/ {printf "X"; next}
+ /VAL/ {printf "V"; next}
+ /   / {chain=""; next}
+ {printf "X"}
+END {printf "\n"}' | fold -w 70
+

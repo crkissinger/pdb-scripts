@@ -1,0 +1,51 @@
+#!/bin/bash
+#
+# Extracts the sequence (as one-letter codes) from the SEQRES records
+# in a PDB file
+# 
+# TODO: make sure all codes supported by both PDB and FASTA format are output
+# output dash as FASTA gap indicator?
+# terminal modifications should be skipped
+# DNA, RNA or other non-protein should be skipped
+#
+# Accepts one or more PDB-format coordinate files on the command line
+# If no files are specified, or if "-" is used on the command line, the
+# standard input is used.
+#
+# Waters are ignored
+#
+grep -h -e ^SEQRES $* | cut -c 12,19- | \
+ awk 'BEGIN {chain="START"}
+ {if ($1 && $1 != chain) {if (chain != "START") printf "\n"; printf ">"$1"\n"; chain=$1}}
+ {for (i=2; i <= NF; i++) print $i;}' | \
+ awk '
+ />/ {printf "\n%s\n", $0; next}
+ /ACE/ {next}
+ /ALA/ {printf "A"; next}
+ /ARG/ {printf "R"; next}
+ /ASN/ {printf "N"; next}
+ /ASP/ {printf "D"; next}
+ /ASX/ {printf "B"; next}
+ /CYS/ {printf "C"; next}
+ /GLN/ {printf "Q"; next}
+ /GLU/ {printf "E"; next}
+ /GLX/ {printf "Z"; next}
+ /GLY/ {printf "G"; next}
+ /HIS/ {printf "H"; next}
+ /ILE/ {printf "I"; next}
+ /LEU/ {printf "L"; next}
+ /LYS/ {printf "K"; next}
+ /MET/ {printf "M"; next}
+ /MSE/ {printf "M"; next}
+ /NH2/ {next}
+ /PHE/ {printf "F"; next}
+ /PRO/ {printf "P"; next}
+ /SER/ {printf "S"; next}
+ /THR/ {printf "T"; next}
+ /TRP/ {printf "W"; next}
+ /TYR/ {printf "Y"; next}
+ /UNK/ {printf "X"; next}
+ /VAL/ {printf "V"; next}
+ /.../ {printf "X"; next}
+END {printf "\n"}' | grep -v '^ *$' | fold -w 70
+

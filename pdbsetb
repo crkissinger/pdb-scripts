@@ -1,0 +1,23 @@
+#!/bin/bash
+#
+# Sets the temperature factors in the input PDB files to a specific value
+#
+# The value is specified with the manditory option "-b value".
+#
+# Accepts one or more PDB-format coordinate files on the command line
+# If no files are specified, or "-" is used as a file name, the input is read
+# from the standard input.
+#
+while getopts b: FLAG
+do
+  case "$FLAG" in
+    b) B_VALUE="$OPTARG";;
+    [?]) OPT_ERROR="YES";;
+  esac
+done
+if [ -n "$OPT_ERROR" ] || [ -z "$B_VALUE" ]; then
+ printf "Usage: %s -b value [file ...]\n" `basename $0` 1>&2
+ exit 1
+fi
+shift $((OPTIND-1))
+awk '{ if ( $0 ~ /^ATOM  |^HETATM/ ) { printf "%s%6.2f%s\n", substr($0,1,60), '${B_VALUE}', substr( $0, 67 ); } else print; }' $*
